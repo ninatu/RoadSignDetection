@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<!-- Automatically converted from haarcascade, window size = 50x50 -->
+<haarcascade_left_arrow2 type_id="opencv-haar-classifier">
+  <size>
+    50 50</size>
+  <stages>
+    <_>
+      <!-- stage 0 -->
+      <trees>
+        <_>
+          <!-- tree 0 -->
+          <_>
+            <!-- root node -->
+            <feature>
+              <rects>
+                <_>
+                  39 9 7 12 -1.</_>
+                <_>
+                  36 12 7 6 2.</_></rects>
+              <tilted>1</tilted></feature>
+            <threshold>-1.4064799994230270e-02</threshold>
+            <left_node>1</left_node>
+            <right_val>-9.3604230880737305e-01</right_val></_>
+          <_>
+            <!-- node 1 -->
+            <feature>
+              <rects>
+                <_>
+                  0 0 21 46 -1.</_>
+                <_>
+                  0 23 21 23 2.</_></rects>
+              <tilted>0</tilted></feature>
+            <threshold>8.4653079509735107e-02</threshold>
+            <left_val>1.</left_val>
+            <right_val>-1.</right_val></_></_>
+        <_>
+          <!-- tree 1 -->
+          <_>
+            <!-- root node -->
+            <feature>
+              <rects>
+                <_>
+                  25 11 10 4 -1.</_>
+                <_>
+                  25 11 10 2 2.</_></rects>
+              <tilted>1</tilted></feature>
+            <threshold>-7.5166742317378521e-03</threshold>
+            <left_val>1.</left_val>
+            <right_node>1</right_node></_>
+          <_>
+            <!-- node 1 -->
+            <feature>
+              <rects>
+                <_>
+                  13 0 20 12 -1.</_>
+                <_>
+                  13 4 20 4 3.</_></rects>
+              <tilted>0</tilted></feature>
+            <threshold>1.7354410141706467e-02</threshold>
+            <left_val>-9.8830378055572510e-01</left_val>
+            <right_val>1.0000009536743164e+00</right_val></_></_></trees>
+      <stage_threshold>1.1696159839630127e-02</stage_threshold>
+      <parent>-1</parent>
+      <next>-1</next></_>
+    <_>
+      <!-- stage 1 -->
+      <trees>
+        <_>
+          <!-- tree 0 -->
+          <_>
+            <!-- root node -->
+            <feature>
+              <rects>
+                <_>
+                  22 20 3 6 -1.</_>
+                <_>
+                  20 22 3 2 3.</_></rects>
+              <tilted>1</tilted></feature>
+            <threshold>9.7483128774911165e-04</threshold>
+            <left_node>1</left_node>
+            <right_val>9.9999761581420898e-01</right_val></_>
+          <_>
+            <!-- node 1 -->
+            <feature>
+              <rects>
+                <_>
+                  0 9 20 18 -1.</_>
+                <_>
+                  5 9 10 18 2.</_></rects>
+              <tilted>0</tilted></feature>
+            <threshold>-2.3025110363960266e-02</threshold>
+            <left_val>1.</left_val>
+            <right_val>-1.</right_val></_></_></trees>
+      <stage_threshold>9.9999761581420898e-01</stage_threshold>
+      <parent>0</parent>
+      <next>-1</next></_>
+    <_>
+      <!-- stage 2 -->
+      <trees>
+        <_>
+          <!-- tree 0 -->
+          <_>
+            <!-- root node -->
+            <feature>
+              <rects>
+                <_>
+                  23 23 8 2 -1.</_>
+                <_>
+                  25 25 4 2 2.</_></rects>
+              <tilted>1</tilted></feature>
+            <threshold>-9.3422690406441689e-04</threshold>
+            <left_node>1</left_node>
+            <right_val>-1.0000009536743164e+00</right_val></_>
+          <_>
+            <!-- node 1 -->
+            <feature>
+              <rects>
+                <_>
+                  0 23 36 16 -1.</_>
+                <_>
+                  0 31 36 8 2.</_></rects>
+              <tilted>0</tilted></feature>
+            <threshold>3.7965018302202225e-02</threshold>
+            <left_val>1.</left_val>
+            <right_val>-1.0000009536743164e+00</right_val></_></_></trees>
+      <stage_threshold>1.</stage_threshold>
+      <parent>1</parent>
+      <next>-1</next></_></stages></haarcascade_left_arrow2>
+</opencv_storage>
