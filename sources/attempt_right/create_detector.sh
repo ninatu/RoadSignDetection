@@ -14,6 +14,6 @@ find ./samples -name '*.vec' > samples.dat
 #opencv_createsamples -vec samples.vec  -w 30 -h 30
 
 opencv_haartraining -data haarcascade -vec samples.vec -bg negatives.dat -nstages 10 -nsplits 2 -minhitrate 0.999 -maxfalsealarm 0.3 -npos 400 -nneg 555 -w 15 -h 15 -nonsym -mem 4096 -mode ALL
-./convert_cascade --size="15x15" haarcascade haarcascade_right_arrow7.xml
+./convert_cascade --size="15x15" haarcascade haarcascade_right_arrow8.xml
 
 

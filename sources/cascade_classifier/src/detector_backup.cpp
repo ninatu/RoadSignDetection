@@ -2,76 +2,75 @@
 #include "opencv2/video/video.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
+#include <zmq.hpp>
 #include <iostream>
 #include <stdio.h>
+#include <string>
+#include <vector>
+#include <list>
 
 using namespace std;
 using namespace cv;
+using namespace zmq;
+
+
+int MAX_TTL = 7;
+int MIN_TIME_FROM_CREATE = 10;
+double CENTER_THRESH = 10;
+double RECT_THRESH = 0.5;
+int COUNT_PREV_ANSWER = 5;
+int COUNT_ANSWER = 5;
+
 
 /** Function Headers */
-void detectAndDisplay( Mat frame );
+void detectAndDisplay( Mat &frame, socket_t &socket);
+double measureRects(const Rect &rect1, const Rect &rect2);
+double dist(const Point &p, const Point &q);
+double square(const Rect &rect) ;
+void myfree(void *, void*);
+#include "cascade.cpp"
+class detectedSign;
+class SignData;
+class CascadeDetector;
+
 
 /** Global variables */
-class CascadeDetector {
-    String name;
-    CascadeClassifier cascade;
-    Scalar color;
-    std::vector<Rect> detectRects;
-public:
-    void open(const String &name_xml,const String &name_sign) {
-        name = name_sign;
-        if( !cascade.load(name_xml) ){
-            cout << "--(!)Error loading cascade xml:\n" << name_xml << endl;
-                exit(1);
-        }
-        color = Scalar(rand() % 256, rand() % 256, rand() % 256);
-    }
-    std::vector<Rect> &detect(Mat& frame, Mat &frame_gray) {
-        cascade.detectMultiScale( frame_gray,  detectRects, 1.1, 2, 0|CASCADE_SCALE_IMAGE,  Size(30, 30));
-        for ( size_t i = 0; i < detectRects.size(); i++ )
-        {
-            Point corner1(detectRects[i].x, detectRects[i].y);
-            Point corner2(detectRects[i].x + detectRects[i].width, detectRects[i].y + detectRects[i].height);
-            rectangle(frame, corner1, corner2, color, 2, 8, 0 );
-        }
-        return detectRects;
-    }
-};
 
 CascadeDetector left_detector;
+CascadeDetector right_detector;
+CascadeDetector stop_detector;
+CascadeDetector stright_detector;
 
-String left_arrow_cascade_name =  "./data/haarcascade_right_arrow400.xml";
-String right_arrow_cascade_name =  "./data/haarcascade_right_arrow17.xml";
-String stop_arrow_cascade_name =  "./data/haarcascade_stop_sign6s.xml";
-String stright_arrow_cascade_name =  "./data/haarcascade_left_arrow4.xml";
-CascadeClassifier left_cascade;
-CascadeClassifier right_cascade;
-CascadeClassifier stop_cascade;
-CascadeClassifier stright_cascade;
+string left_arrow_cascade_name =  "./data/haarcascade_left_arrow18.xml";
+String right_arrow_cascade_name =  "./data/haarcascade_right_arrow8.xml";
+String stop_arrow_cascade_name =  "./data/haarcascade_stop_sign7.xml";
+String stright_arrow_cascade_name =  "./data/haarcascade_stright_arrow10.xml";
+//String stop_arrow_cascade_name =  "./data/haarcascade_stop_sign10.xml";
+//String stright_arrow_cascade_name =  "./data/haarcascade_stright_arrow500.xml";
 
-Scalar left_color = Scalar(255, 0, 0);
-Scalar right_color = Scalar(0, 255, 0);
-Scalar stop_color = Scalar(255, 255, 0);
-Scalar stright_color = Scalar(0, 0, 255);
+
+SignData historySigns;
 
 String window_name = "Sign detection";
 /** @function main */
 int main( void )
 {
+    context_t context(1);
+    socket_t socket(context, ZMQ_PUB);
+    socket.bind("tcp://*:4444");
     VideoCapture capture;
     Mat frame;
 
-    left_detector.open(left_arrow_cascade_name, String("left"));
-    if( !left_cascade.load( left_arrow_cascade_name) ){ printf("--(!)Error loading left cascade\n"); return -1; };
-//    if( !right_cascade.load( right_arrow_cascade_name) ){ printf("--(!)Error loading right cascade\n"); return -1; };
-//    if( !stop_cascade.load( stop_arrow_cascade_name) ){ printf("--(!)Error loading stop cascade\n"); return -1; };
-//    if( !stright_cascade.load( stright_arrow_cascade_name) ){ printf("--(!)Error loading stright cascade\n"); return -1; };
+    left_detector.open(left_arrow_cascade_name, string("left"));
+    right_detector.open(right_arrow_cascade_name, string("right"));
+    stop_detector.open(stop_arrow_cascade_name, string("stop"));
+    stright_detector.open(stright_arrow_cascade_name, string("stright"));
 
-    //-- 2. Read the video stream
+    //Read the video stream
     capture.open(0);
     if ( ! capture.isOpened() ) { printf("--(!)Error opening video capture\n"); return -1; }
-
+    capture.set(CV_CAP_PROP_FRAME_WIDTH, 320);
+    capture.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
     while ( capture.read(frame) )
     {
         if( frame.empty() )
@@ -80,9 +79,8 @@ int main( void )
             break;
         }
 
-        //-- 3. Apply the classifier to the frame
-        detectAndDisplay( frame );
-
+        //Apply the classifier to the frame
+        detectAndDisplay( frame, socket);
         int c = waitKey(10);
         if( (char)c == 27 ) { break; } // escape
     }
@@ -90,28 +88,32 @@ int main( void )
 }
 
 /** @function detectAndDisplay */
-void detectAndDisplay( Mat frame )
+void detectAndDisplay( Mat &frame, socket_t &socket )
 {
-    std::vector<Rect> left_arrows;
-    std::vector<Rect> rigth_arrows;
-    std::vector<Rect> stop_arrows;
-    std::vector<Rect> stright_arrows;
-
     Mat frame_gray;
-
     cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
     equalizeHist( frame_gray, frame_gray );
-//    left_cascade.detectMultiScale( frame_gray,  left_arrows, 1.1, 2, 0|CASCADE_SCALE_IMAGE,  Size(30, 30));
-//    right_cascade.detectMultiScale( frame_gray,  right_arrows, 1.1, 2, 0|CASCADE_SCALE_IMAGE,  Size(30, 30));
-//    stop_cascade.detectMultiScale( frame_gray,  stop_arrows, 1.1, 2, 0|CASCADE_SCALE_IMAGE,  Size(30, 30));
-//    stright_cascade.detectMultiScale( frame_gray,  stright_arrows, 1.1, 2, 0|CASCADE_SCALE_IMAGE,  Size(30, 30));
-    left_detector.detect(frame, frame_gray);
-//    for ( size_t i = 0; i < left_arrows.size(); i++ )
-//    {
-//        Point corner1(left_arrows[i].x, left_arrows[i].y);
-//        Point corner2(left_arrows[i].x + left_arrows[i].width, left_arrows[i].y + left_arrows[i].height);
-//        rectangle(frame, corner1, corner2, left_color, 2, 8, 0 );
-//    }
-    //-- Show what you got
+    historySigns.process(left_detector.detect(frame, frame_gray), "left");
+    historySigns.process(right_detector.detect(frame, frame_gray), "right");
+    historySigns.process(stop_detector.detect(frame, frame_gray), "stop");
+    historySigns.process(stright_detector.detect(frame, frame_gray), "stright");
+
+    historySigns.end_process();
+   // historySigns.print();
+    const vector<int> &closesign =  historySigns.getCloseSign();
+    message_t msg((void *)(closesign.data()), COUNT_ANSWER * sizeof(int), myfree);
+    socket.send(msg);
+    if (closesign[0])
+        cout << "left ";
+    if (closesign[1])
+        cout << "right ";
+    if (closesign[2])
+        cout << "stop ";
+    if (closesign[3])
+        cout << "stright ";
+    if (closesign[0] + closesign[1] + closesign[2] + closesign[3] != 0)
+        cout << endl;
+
     imshow( window_name, frame );
 }
+
