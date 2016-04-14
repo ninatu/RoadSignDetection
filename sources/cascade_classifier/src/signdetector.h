@@ -1,4 +1,0 @@
-#ifndef SIGNDETECTOR_H
-#define SIGNDETECTOR_H
-
-#endif // SIGNDETECTOR_H
