@@ -14,11 +14,11 @@ using namespace cv;
 using namespace zmq;
 
 
-int MAX_TTL = 7;
-int MIN_TIME_FROM_CREATE = 10;
+int MAX_TTL = 1;//7;
+int MIN_TIME_FROM_CREATE = 1;//10;
 double CENTER_THRESH = 10;
 double RECT_THRESH = 0.5;
-int COUNT_PREV_ANSWER = 5;
+int COUNT_PREV_ANSWER = 3;//5;
 int COUNT_ANSWER = 5;
 int HUE_THRESH = 55;
 

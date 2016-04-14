@@ -148,7 +148,7 @@ public:
             Mat img;
             cvtColor(Mat(frame, input_objects[i]), img, CV_BGR2HSV);
             if (name_object == string("stop")) {
-                if (mean(img)[0] > HUE_THRESH)
+                if (mean(img)[0] > HUE_THRESH + 1000)
                     continue;
             }
             else if (name_object != string("traffic_light")){
